@@ -16,10 +16,23 @@ public class IntakeSubsystem extends SubsystemBase{
         intakeMotor = new TalonFX(IntakeConstants.kIntakeMotorID);
     }
 
-    public Command setIntakeSpeed(double speed) {
+    //EAT
+    public Command setIntakeSpeed() {
         return runOnce(() -> 
-            intakeMotor.set(speed));
+            intakeMotor.set(IntakeConstants.kIntakeMotorSpeed));
     
+    }
+
+    //STOP
+    public Command stopIntake() {
+        return runOnce(() ->
+        intakeMotor.set(0));
+    }
+
+    //VOMIT
+    public Command reverseIntake() {
+        return runOnce(() ->
+        intakeMotor.set(-IntakeConstants.kIntakeMotorSpeed));
     }
 }
 
