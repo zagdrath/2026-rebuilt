@@ -48,7 +48,7 @@ public class RobotContainer {
 //     public final IntakeSubsystem intake = new IntakeSubsystem();
     public final ShooterSubsystem shooter = new ShooterSubsystem();
     public final TurretSubsystem turret = new TurretSubsystem(drivetrain);
-    public final SpindexerSubsystem spindexer = new SpindexerSubsystem();
+    //public final SpindexerSubsystem spindexer = new SpindexerSubsystem();
 //     public final Superstructure superStructure = new Superstructure(intake, shooter, spindexer, turret, drivetrain);
 
     public RobotContainer() {
@@ -84,13 +84,13 @@ public class RobotContainer {
         joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
         joystick.b().whileTrue(drivetrain.applyRequest(
                 () -> point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));
-        joystick.povRight().whileTrue(turret.setAngle(30));
-        joystick.povLeft().whileTrue(turret.setAngle(-30));
+        joystick.povRight().whileTrue(turret.setAngle(10));
+        joystick.povLeft().whileTrue(turret.setAngle(-10));
         joystick.povDown().whileTrue(turret.testTurret(0));
         joystick.rightBumper().whileTrue(turret.turretAlignment());
         joystick.y().whileTrue(shooter.setShootSpeed(10)).whileFalse(shooter.stopShooter(0.0));
-         joystick.x().whileTrue(spindexer.setSpindexerReceive()).whileFalse(spindexer.stopSpindexer());
-        joystick.povUp().whileTrue(spindexer.setFasterSpindexerReceive()).whileFalse(spindexer.stopSpindexer());
+      //   joystick.x().whileTrue(spindexer.setSpindexerReceive()).whileFalse(spindexer.stopSpindexer());
+       // joystick.povUp().whileTrue(spindexer.setFasterSpindexerReceive()).whileFalse(spindexer.stopSpindexer());
 
 
 
@@ -104,6 +104,7 @@ public class RobotContainer {
 
         drivetrain.registerTelemetry(logger::telemeterize);
     }
+    
 
     public Command getAutonomousCommand() {
         // Simple drive forward auton

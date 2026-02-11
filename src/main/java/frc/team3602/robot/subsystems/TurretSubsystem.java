@@ -38,8 +38,8 @@ public class TurretSubsystem extends SubsystemBase {
 
     // Encoder
     public Double getEncoder() {
-        return (turretMotor.getRotorPosition().getValueAsDouble() * 36); // every revolution is 36 degrees because it is
-                                                                         // a 10:1 gear ratio
+        return (turretMotor.getRotorPosition().getValueAsDouble() * 12); // every revolution is 12 degrees because it is
+                                                                         // a 30:1 gear ratio 10:1 from gear, 3:1 from gear box
     }
 
     // Vision
@@ -49,12 +49,18 @@ public class TurretSubsystem extends SubsystemBase {
     public double setAngle = 0;
 
     // Controllers *These PID values need to be changed*
-    private final PIDController turretController = new PIDController(.06, 0.0, 0);
-    private final PIDController aimController = new PIDController(.04, 0.0, 0);
+    private final PIDController turretController = new PIDController(.1, 0.0, 0.0026);
+    private final PIDController aimController = new PIDController(.00, 0.0, 0);
 
     private final Feedforwards aimFf = new Feedforwards(0);
 
     // Commands
+
+    public Command changeSetAngle(double newSetpoint) {
+        return runOnce(() -> {
+        setAngle = setAngle + newSetpoint;
+        });
+    }
 
     public Command setAngle(double setPosition) {
 
@@ -93,17 +99,20 @@ public class TurretSubsystem extends SubsystemBase {
 
     double voltage;
 
+    double aimOutput;
+
     public Command track() {
         return run(() -> {
             if (vision.getTurretHasTarget()) {
-                setAngle = setAngle - aimController.calculate(vision.getTurretTX(), 0);
+                aimOutput = aimController.calculate(vision.getTurretTX(),0);
+                setAngle = setAngle - aimOutput;
             }
             setAngle = turnFeedforward() + setAngle; // Adds rotational feedforward
             voltage = turretController.calculate(getEncoder(), setAngle);
-            if (voltage > .6) {
-                voltage = .6;
-            } else if (voltage < -.6) {
-                voltage = -.6;
+            if (voltage > 1) {  //TODO: create constant for 2, do not go higher than 2
+                voltage = 1;
+            } else if (voltage < -1) {
+                voltage = -1;
             }
             turretMotor.setVoltage(voltage);
         }
@@ -174,8 +183,9 @@ public class TurretSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Turret IMUPitch", vision.getTurretIMUPitch());
         SmartDashboard.putNumber("GetDistance", vision.getDist());
         angle = Math.toRadians(vision.getTY() + vision.getTurretIMUPitch());
-        distance =(44.25 - 15.625) / Math.tan(angle);
+        distance =(44.21875 - 15.625) / Math.tan(angle);
         SmartDashboard.putNumber("counculatedDist", distance);
+        SmartDashboard.putNumber("Aim Output", aimOutput);
     }
 
     // Config
