@@ -21,8 +21,8 @@ public class SpindexerSubsystem extends SubsystemBase {
 
     public SpindexerSubsystem() {
 
-        spindexerMotor = new TalonFX(spindexerConstants.kSpindexerMotorID);
-        receiveMotor = new TalonFX(spindexerConstants.kReceiveMotorID);
+        spindexerMotor = new TalonFX(spindexerConstants.kSpindexerMotorID, "rio");
+        receiveMotor = new TalonFX(spindexerConstants.kReceiveMotorID, "rio");
     }
 
     /* Commands */
@@ -46,8 +46,8 @@ public class SpindexerSubsystem extends SubsystemBase {
 
     public Command setFasterSpindexerReceive() {
         return runOnce(() -> {
-            receiveMotor.set(spindexerConstants.kRecieveFuelSpeed*2);
-            spindexerMotor.set(spindexerConstants.kSpindexerMotorSpeed*2);
+            receiveMotor.set(-spindexerConstants.kRecieveFuelSpeed);
+            spindexerMotor.set(spindexerConstants.kSpindexerMotorSpeed);
         });
     }
 

@@ -7,6 +7,8 @@
 package frc.team3602.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.team3602.robot.Constants.ShooterConstants;
 import frc.team3602.robot.Constants.spindexerConstants;
 import frc.team3602.robot.subsystems.CommandSwerveDrivetrain;
@@ -31,6 +33,14 @@ public class Superstructure {
         this.turretSubsys = turretSubsys;
             }
 
+        /*Score Commands*/
+            public Command shootBall1() {
+                return Commands.sequence(
+                    spindexerSubsys.setSpindexerReceive(),
+                    shooterSubsys.setShootVoltage(12)
+                );
+
+            }
             //Intake
          public Command IntakeBall() {
         return intakeSubsys.setIntakeSpeed().withTimeout(0.2);}

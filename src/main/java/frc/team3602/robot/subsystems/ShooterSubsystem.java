@@ -25,8 +25,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
     // Constructor
     public ShooterSubsystem() {
-        shootermotor1 = new TalonFX(ShooterConstants.kShooterMotor1ID);
-        shootermotor2 = new TalonFX(ShooterConstants.kShooterMotor2ID);
+        shootermotor1 = new TalonFX(ShooterConstants.kShooterMotor1ID, "rio");
+        shootermotor2 = new TalonFX(ShooterConstants.kShooterMotor2ID, "rio");
         // feedermoter = new TalonFX(ShooterConstants.kFeederMotorID);
     }
 
@@ -34,13 +34,13 @@ public class ShooterSubsystem extends SubsystemBase {
     public Command setShootSpeed(double shootSpeed) {
         return runOnce(() -> {
             shootermotor1.set(shootSpeed);
-            shootermotor2.set(shootSpeed); 
+            shootermotor2.set(-shootSpeed); 
         });
     }
 
         public Command setShootVoltage(double shootVoltz) {
         return runOnce(() -> {
-            shootermotor1.setVoltage(shootVoltz);
+            shootermotor1.setVoltage(-shootVoltz);
             shootermotor2.setVoltage(shootVoltz); 
         });
     }
@@ -53,9 +53,10 @@ public class ShooterSubsystem extends SubsystemBase {
     // }
 
     // Stop
-    public Command stopShooter(double shootStop) {
+    public Command stopShooter() {
         return runOnce(() -> {
             shootermotor1.set(0);
+            shootermotor2.set(0);
         });
     }
 

@@ -25,8 +25,7 @@ public class TurretSubsystem extends SubsystemBase {
     }
 
     // Motor
-    private final TalonFX turretMotor = new TalonFX(TurretConstants.kTurretMotorID);
-    private final CANcoder turretEncoder = new CANcoder(TurretConstants.kTurretEncoderID);
+    private final TalonFX turretMotor = new TalonFX(TurretConstants.kTurretMotorID, "rio");
 
     public TurretSubsystem() {
         // Zero Encoder
