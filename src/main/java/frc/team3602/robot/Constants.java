@@ -22,7 +22,7 @@ public final class Constants {
         public final static int kIntakePivotID = 13;
         
         //Motor Speeds
-        public final static double kIntakeMotorSpeed = .5;
+        public final static double kIntakeMotorSpeed = -0.5;
 
     }
 

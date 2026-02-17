@@ -82,14 +82,14 @@ public class RobotContainer {
                         .withRotationalRate(drivetrain.rAlignment()) // Drive counterclockwise with negative X (left)
                 ));
         joystick.a().whileTrue(spindexer.setFasterSpindexerReceive()).onFalse(spindexer.stopSpindexer());
-        joystick.b().whileTrue(shooter.setShootVoltage(12)).onFalse(shooter.stopShooter());
+        joystick.b().whileTrue(shooter.setShootVoltage(8)).onFalse(shooter.stopShooter());
         joystick.povRight().whileTrue(turret.setAngle(10));
         joystick.povLeft().whileTrue(turret.setAngle(-10));
         //joystick.povDown().whileTrue(turret.testTurret(0));
         joystick.rightBumper().whileTrue(turret.turretAlignment());
         joystick.y().whileTrue(shooter.setShootSpeed(10)).whileFalse(shooter.stopShooter());
-        joystick.povDown().whileTrue(intake.dropIntake()).onFalse(intake.stopPivot());
-        joystick.povUp().whileTrue(intake.raiseIntake()).onFalse(intake.stopPivot());
+        joystick.povDown().whileTrue(intake.dropIntake());
+        joystick.povUp().whileTrue(intake.setIntakeSpeed()).onFalse(intake.stopIntake());
         // joystick.x().whileTrue(spindexer.setSpindexerReceive()).whileFalse(spindexer.stopSpindexer());
         // joystick.povUp().whileTrue(spindexer.setFasterSpindexerReceive()).whileFalse(spindexer.stopSpindexer());
 

@@ -21,10 +21,14 @@ public class IntakeSubsystem extends SubsystemBase{
     }
 
     public Double getPosition() {
-        return (intakePivot.getRotorPosition().getValueAsDouble() / 9); // every revolution is 12 degrees because it is                                                           // a 30:1 gear ratio 10:1 from gear, 3:1 from gear box
+        return (intakePivot.getRotorPosition().getValueAsDouble() / 125); // every revolution is 12 degrees because it is                                                           // a 30:1 gear ratio 10:1 from gear, 3:1 from gear box
     }
     public Boolean isDown() {
-        return (getPosition() < .25);
+        return (getPosition() < -0.6);
+    }
+
+    public Boolean isUP() {
+        return (getPosition() > -4.5);
     }
 
     //EAT
@@ -58,14 +62,14 @@ public class IntakeSubsystem extends SubsystemBase{
 
      public Command dropIntake() {
         return Commands.sequence(
-         this.runPivot(.4).until(() -> this.isDown()),
+         this.runPivot(12).until(() -> this.isDown()),
          this.stopPivot()
         );
      }
 
      public Command raiseIntake(){
         return Commands.sequence(
-            this.runPivot(-0.4).until(() -> !this.isDown()),
+            this.runPivot(-12).until(() -> this.isUP()),
             this.stopPivot()
         );
      }
