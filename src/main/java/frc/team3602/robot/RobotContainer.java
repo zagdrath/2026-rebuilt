@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.team3602.robot.Vision;
 import frc.team3602.robot.generated.TunerConstants;
@@ -28,6 +29,7 @@ import frc.team3602.robot.subsystems.TurretSubsystem;
 
 public class RobotContainer {
 
+       
     private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top
                                                                                         // speed
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second
@@ -44,6 +46,7 @@ public class RobotContainer {
 
     public final CommandXboxController joystick = new CommandXboxController(0);
 
+    public final Vision vision = new Vision();
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
     public final IntakeSubsystem intake = new IntakeSubsystem();
     public final ShooterSubsystem shooter = new ShooterSubsystem();
@@ -51,10 +54,15 @@ public class RobotContainer {
     public final SpindexerSubsystem spindexer = new SpindexerSubsystem();
     public final Superstructure superStructure = new Superstructure(intake, shooter, spindexer, turret, drivetrain);
 
+    private Boolean intakeUp = (intake.getPivotEncoder < 0);
+    private Boolean intakeDown = (intake.getPivotEncoder > 90);
+
     public RobotContainer() {
         turret.setDefaultCommand(turret.track());
+        intake.setDefaultCommand(intake.holdPivot());
         configureBindings();
     }
+    
 
     private void configureBindings() {
         // Note that X is defined as forward according to WPILib convention,
@@ -87,9 +95,9 @@ public class RobotContainer {
         joystick.povLeft().whileTrue(turret.setAngle(-10));
         //joystick.povDown().whileTrue(turret.testTurret(0));
         joystick.rightBumper().whileTrue(turret.turretAlignment());
-        joystick.y().whileTrue(shooter.setShootSpeed()).whileFalse(shooter.stopShooter());
+        // joystick.y().whileTrue(shooter.setShootSpeed()).whileFalse(shooter.stopShooter());
         joystick.povDown().whileTrue(intake.dropIntake());
-        joystick.povUp().whileTrue(intake.setIntakeSpeed()).onFalse(intake.stopIntake());
+        joystick.povUp().whileTrue(intake.raiseIntake());
         // joystick.x().whileTrue(spindexer.setSpindexerReceive()).whileFalse(spindexer.stopSpindexer());
         // joystick.povUp().whileTrue(spindexer.setFasterSpindexerReceive()).whileFalse(spindexer.stopSpindexer());
 
