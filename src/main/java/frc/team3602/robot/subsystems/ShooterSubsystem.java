@@ -8,6 +8,8 @@ package frc.team3602.robot.subsystems;
 
 import static frc.team3602.robot.Constants.*;
 
+import java.util.function.DoubleSupplier;
+
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
@@ -30,8 +32,8 @@ public class ShooterSubsystem extends SubsystemBase {
     public Vision  vision  = new Vision();
 
     //Interpolation Table Instantiation
-    // public double shootLerpSpeed = 0.0;
-    // public final InterpolatingDoubleTreeMap shootLerp = new InterpolatingDoubleTreeMap();
+    public double shootLerpSpeed;
+    public final InterpolatingDoubleTreeMap shootLerp = new InterpolatingDoubleTreeMap();
     // Feeding Motor
     // private static TalonFX feedermoter;
 
@@ -40,6 +42,12 @@ public class ShooterSubsystem extends SubsystemBase {
         shootermotor1 = new TalonFX(ShooterConstants.kShooterMotor1ID, "rio");
         shootermotor2 = new TalonFX(ShooterConstants.kShooterMotor2ID, "rio");
         // feedermoter = new TalonFX(ShooterConstants.kFeederMotorID);
+    }
+
+    public Command setSpeed() {
+        return runOnce(() ->{
+            shootLerpSpeed = ((DoubleSupplier) shootLerp).getAsDouble();
+        });
     }
 
     // Go
@@ -78,36 +86,40 @@ public class ShooterSubsystem extends SubsystemBase {
     //     });
     // }
 
+    public double shootSpeed() {
+        return shootLerpSpeed;
+    }
+
     // Periodic
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Shooter1 Speed", ShooterConstants.kShooterSpeed);
         SmartDashboard.putNumber("Shooter2 Speed", ShooterConstants.kShooterSpeed);
         // SmartDashboard.putNumber("Feeder Speed", ShooterConstants.kFeederMotorSpeed);
-
+        shootLerpSpeed = shootLerp.get(vision.getDist());
         // shootLerpSpeed = shootLerp.get(vision.getDist() / 12);
 
     }
-    // private void configShooterSubsys() {
-    // // Interpolation table config
-    // shootLerp.put(1.0, 0.57);
-    // shootLerp.put(2.0, 0.59);
-    // shootLerp.put(3.0, 0.61);
-    // shootLerp.put(4.0, 0.63);
-    // shootLerp.put(5.0, 0.65);
-    // shootLerp.put(6.0, 0.67);
-    // shootLerp.put(7.0, 0.69);
-    // shootLerp.put(8.0, 0.71);
-    // shootLerp.put(9.0, 0.73); 
-    // shootLerp.put(10.0,0.75);
-    // shootLerp.put(11.0,0.77);
-    // shootLerp.put(12.0,0.79);
-    // shootLerp.put(13.0,0.81);
-    // shootLerp.put(14.0,0.83);
-    // shootLerp.put(15.0,0.85);
-    // shootLerp.put(16.0,0.87);
-    // shootLerp.put(17.0,0.89);
-    // shootLerp.put(18.0,0.9);
-    // }
+    private void configShooterSubsys() {
+    // Interpolation table config
+    shootLerp.put(1.0, 0.57);
+    shootLerp.put(2.0, 0.59);
+    shootLerp.put(3.0, 0.61);
+    shootLerp.put(4.0, 0.63);
+    shootLerp.put(5.0, 0.65);
+    shootLerp.put(6.0, 0.67);
+    shootLerp.put(7.0, 0.69);
+    shootLerp.put(8.0, 0.71);
+    shootLerp.put(9.0, 0.73); 
+    shootLerp.put(10.0,0.75);
+    shootLerp.put(11.0,0.77);
+    shootLerp.put(12.0,0.79);
+    shootLerp.put(13.0,0.81);
+    shootLerp.put(14.0,0.83);
+    shootLerp.put(15.0,0.85);
+    shootLerp.put(16.0,0.87);
+    shootLerp.put(17.0,0.89);
+    shootLerp.put(18.0,0.9);
+    }
 
 }

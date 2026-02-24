@@ -35,17 +35,28 @@ public class Superstructure {
             }
 
         /*Score Commands*/
-            public Command shootBall1() {
+            public Command shootCommand() {
                 return Commands.parallel(
                     turretSubsys.track(),
-                Commands.sequence(
-                    if(vision.getHasTarget()) 
-                    return 
-                    shooterSubsys.setShootVoltage(12).withTimeout(1.28).andThen(spindexerSubsys.setSpindexerReceive())
-                )
+                    shooterSubsys.setShootVoltage(12),
+                    Commands.sequence(
+                    spindexerSubsys.setSpindexerReceive().withTimeout(1)
+                    )
                 );
             }
-            //Intake
+        //Intake
+            public Command intakeCommand() {
+                return Commands.sequence(
+                    intakeSubsys.dropIntake().alongWith(intakeSubsys.setIntakeSpeed())
+                );
+            }
+
+            public Command intakeStowCommand() {
+                return Commands.sequence(
+                intakeSubsys.raiseIntake().alongWith(intakeSubsys.stopIntake())
+                );
+            }
+
          public Command IntakeBall() {
         return intakeSubsys.setIntakeSpeed().withTimeout(0.2);}
          

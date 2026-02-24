@@ -13,12 +13,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import frc.team3602.robot.subsystems.*;
 import frc.team3602.robot.Constants.*;
 import frc.team3602.robot.Vision;
 
 public class TurretSubsystem extends SubsystemBase {
 
     public CommandSwerveDrivetrain drivetrainSubsys;
+    public ShooterSubsystem shooterSubsys;
 
     public TurretSubsystem(CommandSwerveDrivetrain drivetrainSubsys) {
         this.drivetrainSubsys = drivetrainSubsys;
@@ -99,7 +101,7 @@ public class TurretSubsystem extends SubsystemBase {
 //Ball Velocity
 public double ballVelocity() {
     /*Ball Velocity = Motor Speed *  */
-    double ballv = 1 * Math.PI * 4;
+    double ballv = shooterSubsys.shootSpeed() * Math.PI * 4;
     return ballv;
 }    
 
