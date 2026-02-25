@@ -27,28 +27,34 @@ public class ShooterSubsystem extends SubsystemBase {
     private static TalonFX shootermotor2;
 
     //Instantiating Classes
-    public Vision  vision  = new Vision();
+    public Vision vision;
 
     // Interpolation Table Instantiation
     public double shootLerpSpeed = 0.0;
+    double shootShuffleSpeed = 0.0;
     public final InterpolatingDoubleTreeMap shootLerp = new InterpolatingDoubleTreeMap();
     // Feeding Motor
     // private static TalonFX feedermoter;
 
     // Constructor
-    public ShooterSubsystem() {
+    public ShooterSubsystem(Vision vision) {
         shootermotor1 = new TalonFX(ShooterConstants.kShooterMotor1ID, "rio");
         shootermotor2 = new TalonFX(ShooterConstants.kShooterMotor2ID, "rio");
+        this.vision = vision;
         // feedermoter = new TalonFX(ShooterConstants.kFeederMotorID);
+        configShooterSubsys();
+        SmartDashboard.putNumber("ShootSpeedInput", shootShuffleSpeed);
     }
 
     // Go
-    // public Command setShootSpeed() {
-    //     return runOnce(() -> {
-    //         shootermotor1.set(shootLerpSpeed);
-    //         shootermotor2.set(-shootLerpSpeed); 
-    //     });
-    // }
+    public Command setShootSpeed() {
+        return run(() -> {
+            shootermotor1.set(-shootLerpSpeed);//-shootLerpSpeed
+            shootermotor2.set(shootLerpSpeed); //shootLerpSpeed
+        });
+    }
+
+
 
         public Command setShootVoltage(double shootVoltz) {
         return runOnce(() -> {
@@ -66,7 +72,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     // Stop
     public Command stopShooter() {
-        return runOnce(() -> {
+        return run(() -> {
             shootermotor1.set(0);
             shootermotor2.set(0);
         });
@@ -77,21 +83,27 @@ public class ShooterSubsystem extends SubsystemBase {
     //         feedermoter.set(0);
     //     });
     // }
-
     // Periodic
+    double angle;
+    double distance;
+
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Shooter1 Speed", ShooterConstants.kShooterSpeed);
         SmartDashboard.putNumber("Shooter2 Speed", ShooterConstants.kShooterSpeed);
         // SmartDashboard.putNumber("Feeder Speed", ShooterConstants.kFeederMotorSpeed);
-
-        // shootLerpSpeed = shootLerp.get(vision.getDist() / 12);
+        angle = Math.toRadians(vision.getTY() + vision.getTurretIMUPitch());
+        distance =(44.21875 - 15.625) / Math.tan(angle);
+        shootLerpSpeed = shootLerp.get(distance / 12);
+        SmartDashboard.putNumber("Lerp Shoot Speed", shootLerpSpeed);
+        SmartDashboard.putNumber("Dist in side of shootsubsys",distance / 12);
+        SmartDashboard.getNumber("ShootSpeedInput", shootShuffleSpeed);
 
     }
+
     private void configShooterSubsys() {
     // Interpolation table config
-    shootLerp.put(1.0, 0.57);
-    shootLerp.put(2.0, 0.59);
+    shootLerp.put(2.0, 0.57);
     shootLerp.put(3.0, 0.61);
     shootLerp.put(4.0, 0.63);
     shootLerp.put(5.0, 0.65);

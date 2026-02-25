@@ -47,13 +47,15 @@ public class Vision {
     double limelightLensHeightInches = 20.0; 
 
     // distance from the target to the floor
-    double goalHeightInches = 60.0; 
+    double goalHeightInches = 44.25; 
 
     double angleToGoalDegrees = limelightMountAngleDegrees + getTY();
     double angleToGoalRadians = angleToGoalDegrees * (3.14159 / 180.0);
     //calculated Distance
+    double angle = Math.toRadians(this.getTY() + this.getTurretIMUPitch());
+    double distance;
     public double getDist() {
-        return (goalHeightInches - limelightLensHeightInches) / Math.tan(angleToGoalRadians);
+        return   distance =(44.21875 - 15.625) / Math.tan(angle);
     }
 
     public double getPoseY() {

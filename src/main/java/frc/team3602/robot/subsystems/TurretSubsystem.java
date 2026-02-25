@@ -232,12 +232,10 @@ public double calculateTurretOffset() {
         SmartDashboard.putNumber("Set Angle", setAngle);
         SmartDashboard.putNumber("Turret Set Angle", vision.getTurretTX());
         SmartDashboard.putNumber("Aim PID", aimController.calculate(vision.getTurretTX(), 0));
-        SmartDashboard.putNumber("Distance Calculation", vision.getDist());
         SmartDashboard.putNumber("GetTy", vision.getTY());
         // turretFeedForward = turnFeedforward();
         SmartDashboard.putNumber("Turret Feedforward", turretFeedForward); // Bruh
         SmartDashboard.putNumber("Turret IMUPitch", vision.getTurretIMUPitch());
-        SmartDashboard.putNumber("GetDistance", vision.getDist());
         angle = Math.toRadians(vision.getTY() + vision.getTurretIMUPitch());
         distance =(44.21875 - 15.625) / Math.tan(angle);
         SmartDashboard.putNumber("counculatedDist", distance);

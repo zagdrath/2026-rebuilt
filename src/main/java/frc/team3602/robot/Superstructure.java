@@ -39,13 +39,18 @@ public class Superstructure {
                 return Commands.parallel(
                     turretSubsys.track(),
                 Commands.sequence(
-                    shooterSubsys.setShootVoltage(12).withTimeout(1.28).andThen(spindexerSubsys.setSpindexerReceive())
+                    shooterSubsys.setShootSpeed().withTimeout(1.28).andThen(spindexerSubsys.setSpindexerReceive())
                 )
                 );
             }
             //Intake
          public Command IntakeBall() {
-        return intakeSubsys.setIntakeSpeed().withTimeout(0.2);}
+        return intakeSubsys.dropIntake().andThen(intakeSubsys.setIntakeSpeed().withTimeout(0.2));
+    }
+        
+        public Command StopIntake() {
+            return intakeSubsys.raiseIntake().andThen(intakeSubsys.stopIntake());
+        }
          
         public Command OutakeBall() {
             return intakeSubsys.reverseIntake().withTimeout(.2);}
