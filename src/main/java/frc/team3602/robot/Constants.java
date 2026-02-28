@@ -44,7 +44,7 @@ public final class Constants {
 
         public final static double kSpindexerMotorSpeed = -.65;
 
-        public final static double kRecieveFuelSpeed = .65;
+        public final static double kRecieveFuelSpeed = .75;//.65
     }
 
     

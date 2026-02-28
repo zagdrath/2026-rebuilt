@@ -14,6 +14,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -46,6 +47,7 @@ public class RobotContainer {
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
     private SendableChooser<Command> autoChooser;
+    private SendableChooser<Double> polarityChooser = new SendableChooser<>();
 
     public final CommandXboxController driverController = new CommandXboxController(0);
     public final CommandXboxController operatorController = new CommandXboxController(1);
@@ -69,6 +71,9 @@ public class RobotContainer {
         // named commands for pathplanner go here
         pivot.setDefaultCommand(pivot.holdPivot());
         configureBindings();
+        polarityChooser.setDefaultOption("Positive", 1.0);
+        polarityChooser.addOption("Negative", -1.0);
+        SmartDashboard.putData( "Polarity Chooser", polarityChooser);
     }
     
 
@@ -77,10 +82,10 @@ public class RobotContainer {
         // and Y is defined as to the left according to WPILib convention.
         drivetrain.setDefaultCommand(
                 // Drivetrain will execute this command periodically
-                drivetrain.applyRequest(() -> drive.withVelocityX(-driverController.getLeftY() * MaxSpeed) // Drive forward with
+                drivetrain.applyRequest(() -> drive.withVelocityX(polarityChooser.getSelected()*-driverController.getLeftY() * MaxSpeed) // Drive forward with
                                                                                                   // negative Y
                                                                                                   // (forward)
-                        .withVelocityY(-driverController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+                        .withVelocityY(polarityChooser.getSelected()*-driverController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
                         .withRotationalRate(-driverController.getRightX() * MaxAngularRate) // Drive counterclockwise with
                                                                                     // negative X (left)
 
@@ -99,7 +104,7 @@ public class RobotContainer {
                 ));
         driverController.a().whileTrue(spindexer.setFasterSpindexerReceive()).onFalse(spindexer.stopSpindexer());
         driverController.b().whileTrue(shooter.setShootSpeed()).onFalse(shooter.stopShooter());
-        driverController.x().whileTrue(shooter.setShootSpeed()).onFalse(shooter.stopShooter());
+        driverController.x().whileTrue(superStructure.shootBall2()).onFalse(superStructure.stopShoot().andThen(spindexer.stopSpindexer()));
         driverController.povRight().whileTrue(turret.setAngle(10));
         driverController.povLeft().whileTrue(turret.setAngle(-10));
         //driverController.povDown().whileTrue(turret.testTurret(0));

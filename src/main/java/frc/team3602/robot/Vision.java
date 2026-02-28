@@ -12,7 +12,7 @@ public class Vision {
 
 
     public Vision() {
-    int[] validTagID = {21, 26, 18, 8, 9, 11};
+    int[] validTagID = {21, 26, 18, 5, 10, 2};
     LimelightHelpers.SetFiducialIDFiltersOverride("limelight-turret", validTagID);
     }
 

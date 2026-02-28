@@ -19,7 +19,7 @@ import frc.team3602.robot.subsystems.SpindexerSubsystem;
 import frc.team3602.robot.subsystems.TurretSubsystem;
 
 public class Superstructure {
-    
+
     public IntakeSubsystem intakeSubsys;
     public ShooterSubsystem shooterSubsys;
     public SpindexerSubsystem spindexerSubsys;
@@ -28,53 +28,76 @@ public class Superstructure {
     public Vision vision;
     public PivotSubsystem pivotSubsys;
 
-     public Superstructure(IntakeSubsystem intakeSubsys, ShooterSubsystem shooterSubsys, SpindexerSubsystem spindexerSubsys,
-            TurretSubsystem turretSubsys, CommandSwerveDrivetrain commandSwerveDrivetrainSubsys, PivotSubsystem pivotsubsys) {
+    public Superstructure(IntakeSubsystem intakeSubsys, ShooterSubsystem shooterSubsys,
+            SpindexerSubsystem spindexerSubsys,
+            TurretSubsystem turretSubsys, CommandSwerveDrivetrain commandSwerveDrivetrainSubsys,
+            PivotSubsystem pivotsubsys) {
         this.intakeSubsys = intakeSubsys;
         this.shooterSubsys = shooterSubsys;
         this.spindexerSubsys = spindexerSubsys;
         this.turretSubsys = turretSubsys;
         this.pivotSubsys = pivotsubsys;
-            }
+    }
 
-        /*Score Commands*/
-            public Command shootBall1() {
-                return Commands.parallel(
-                    turretSubsys.track(),
+    /* Score Commands */
+    public Command shootBall1() {
+        return Commands.parallel(
+                turretSubsys.track(),
                 Commands.sequence(
-                    shooterSubsys.setShootSpeed().withTimeout(1.28).andThen(spindexerSubsys.setSpindexerReceive())
-                )
-                );
-            }
-            //Intake
-         public Command IntakeBall() {
+                        shooterSubsys.setShootSpeed().withTimeout(1.7)
+                // .andThen(spindexerSubsys.setSpindexerReceive())
+                ));
+    }
+
+    public Command shootBall2() {
+        return Commands.parallel(
+                turretSubsys.track(),
+                Commands.sequence(
+                        shooterSubsys.setShootSpeed().withTimeout(2).andThen(
+                                spindexerSubsys.setFasterSpindexerReceive())
+
+                ));
+    }
+
+    public Command stopShoot() {
+        return Commands.sequence(shooterSubsys.stopShooter(),
+                spindexerSubsys.stopSpindexer());
+
+    }
+
+    // Intake
+    public Command IntakeBall() {
         return pivotSubsys.dropIntake().alongWith(intakeSubsys.setIntakeSpeed().withTimeout(0.2));
     }
-        
-        public Command StopIntake() {
-            return pivotSubsys.raiseIntake().alongWith(intakeSubsys.stopIntake());
-        }
-         
-        public Command OutakeBall() {
-            return intakeSubsys.reverseIntake().withTimeout(.2);}
 
-            //Shooter
-        // public Command ShootBall() {
-        //     return shooterSubsys.setShootSpeed(ShooterConstants.kFeederMotorSpeed).withTimeout(1);
-        // }
-        // public Command FeedBall() {
-        //     return shooterSubsys.setFeederSpeed(ShooterConstants.kFeederMotorSpeed).withTimeout(1);
-        // }
-
-        // //Turret
-
-        // //Spindexer
-        // public Command RunSpindexer() {
-        //     return spindexerSubsys.setSpindexerSpeed(spindexerConstants.kSpindexerMotorSpeed).withTimeout(1);
-        // }
-
-        // public Command ReceiveBall() {
-        //     return spindexerSubsys.setSpindexerSpeed(spindexerConstants.kRecieveFuelSpeed).withTimeout(1);
-        // }
+    public Command StopIntake() {
+        return pivotSubsys.raiseIntake().alongWith(intakeSubsys.stopIntake());
     }
 
+    public Command OutakeBall() {
+        return intakeSubsys.reverseIntake().withTimeout(.2);
+    }
+
+    // Shooter
+    // public Command ShootBall() {
+    // return
+    // shooterSubsys.setShootSpeed(ShooterConstants.kFeederMotorSpeed).withTimeout(1);
+    // }
+    // public Command FeedBall() {
+    // return
+    // shooterSubsys.setFeederSpeed(ShooterConstants.kFeederMotorSpeed).withTimeout(1);
+    // }
+
+    // //Turret
+
+    // //Spindexer
+    // public Command RunSpindexer() {
+    // return
+    // spindexerSubsys.setSpindexerSpeed(spindexerConstants.kSpindexerMotorSpeed).withTimeout(1);
+    // }
+
+    // public Command ReceiveBall() {
+    // return
+    // spindexerSubsys.setSpindexerSpeed(spindexerConstants.kRecieveFuelSpeed).withTimeout(1);
+    // }
+}
