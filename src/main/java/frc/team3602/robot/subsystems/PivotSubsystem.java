@@ -52,7 +52,7 @@ public class PivotSubsystem extends SubsystemBase {
 
          public Command dropIntake() {
         return run(() ->
-         pivotSetPoint = 90
+         pivotSetPoint = 109
         );
      }
 

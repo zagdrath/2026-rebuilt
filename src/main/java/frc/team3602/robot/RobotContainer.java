@@ -13,6 +13,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -44,6 +45,7 @@ public class RobotContainer {
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
+    private SendableChooser<Command> autoChooser;
 
     public final CommandXboxController driverController = new CommandXboxController(0);
     public final CommandXboxController operatorController = new CommandXboxController(1);
@@ -58,11 +60,13 @@ public class RobotContainer {
     public final PivotSubsystem pivot = new PivotSubsystem();
     public final Superstructure superStructure = new Superstructure(intake, shooter, spindexer, turret, drivetrain, pivot);
 
+
+
     private Boolean intakeUp = (pivot.getPivotEncoder < 0);
     private Boolean intakeDown = (pivot.getPivotEncoder > 90);
 
     public RobotContainer() {
-        // 
+        // named commands for pathplanner go here
         pivot.setDefaultCommand(pivot.holdPivot());
         configureBindings();
     }

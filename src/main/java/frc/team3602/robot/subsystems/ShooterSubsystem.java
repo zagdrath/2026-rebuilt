@@ -49,7 +49,7 @@ public class ShooterSubsystem extends SubsystemBase {
     // Go
     public Command setShootSpeed() {
         return run(() -> {
-            shootermotor1.set(-.95);//-shootLerpSpeed
+            shootermotor1.set(-shootLerpSpeed);
             // shootermotor2.set(shootLerpSpeed); //shootLerpSpeed
         });
     }
