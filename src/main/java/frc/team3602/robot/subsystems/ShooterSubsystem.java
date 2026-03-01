@@ -117,8 +117,8 @@ public class ShooterSubsystem extends SubsystemBase {
         
         var slot0Configs = talonFXConfigs.Slot0;
         slot0Configs.kS = 0.25; // Add 0.25 V output to overcome static friction
-        slot0Configs.kV = 0.19; // A velocity target of 1 rps results in 0.12 V output
-        slot0Configs.kA = 0.00; // An acceleration of 1 rps/s requires 0.01 V output
+        slot0Configs.kV = .19; // A velocity target of 1 rps results in 0.12 V output
+        slot0Configs.kA = 0; // An acceleration of 1 rps/s requires 0.01 V output
         slot0Configs.kP = 0.11; // An error of 1 rps results in 0.11 V output
         slot0Configs.kI = 0; // no output for integrated error
         slot0Configs.kD = 0; // no output for error derivative
@@ -146,7 +146,7 @@ public class ShooterSubsystem extends SubsystemBase {
         shootLerp.put(15.0, 0.85);
         shootLerp.put(16.0, 0.87);
         shootLerp.put(17.0, 0.89);
-        shootLerp.put(18.0, 0.9);//6767
+        shootLerp.put(18.0, 0.9);
 
 
     }

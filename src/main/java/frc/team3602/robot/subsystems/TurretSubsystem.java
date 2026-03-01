@@ -171,7 +171,7 @@ public double calculateTurretOffset() {
     public Command track() {
         return run(() -> {
             if (vision.getTurretHasTarget()) {
-                aimOutput = aimController.calculate(vision.getTurretTX(),3);
+                aimOutput = aimController.calculate(vision.getTurretTX(),5);//setpoint is the offset of the turret(temp)
                 setAngle = setAngle - aimOutput + calculateTurretOffset() ;
             }
             setAngle = turnFeedforward() + setAngle; // Adds rotational feedforward

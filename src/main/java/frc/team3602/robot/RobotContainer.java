@@ -112,6 +112,7 @@ public class RobotContainer {
         // driverController.y().whileTrue(shooter.setShootSpeed()).whileFalse(shooter.stopShooter());
         operatorController.povDown().whileTrue(superStructure.IntakeBall());
         operatorController.povUp().whileTrue(superStructure.StopIntake());
+        operatorController.b().whileTrue(shooter.setShootVelocity(-62)).onFalse(shooter.stopShooter());
         // operatorController.a().whileTrue(intake.setIntakeSpeed()).onFalse(intake.stopIntake());
         // driverController.x().whileTrue(spindexer.setSpindexerReceive()).whileFalse(spindexer.stopSpindexer());
         // driverController.povUp().whileTrue(spindexer.setFasterSpindexerReceive()).whileFalse(spindexer.stopSpindexer());

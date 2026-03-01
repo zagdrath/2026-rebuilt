@@ -44,7 +44,8 @@ public class Superstructure {
         return Commands.parallel(
                 turretSubsys.track(),
                 Commands.sequence(
-                        shooterSubsys.setShootSpeed().withTimeout(1.7)
+
+                        shooterSubsys.setShootVelocity(-62.5).withTimeout(1.7)
                 // .andThen(spindexerSubsys.setSpindexerReceive())
                 ));
     }
@@ -53,8 +54,8 @@ public class Superstructure {
         return Commands.parallel(
                 turretSubsys.track(),
                 Commands.sequence(
-                        shooterSubsys.setShootSpeed().withTimeout(2).andThen(
-                                spindexerSubsys.setFasterSpindexerReceive())
+                        shooterSubsys.setShootVelocity(-57.5).withTimeout(2).andThen(
+                        spindexerSubsys.setFeedVelocity(-57.5))
 
                 ));
     }
