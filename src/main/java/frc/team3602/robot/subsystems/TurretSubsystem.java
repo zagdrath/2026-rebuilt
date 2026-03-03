@@ -7,6 +7,8 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.swerve.utility.WheelForceCalculator.Feedforwards;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
+
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -49,7 +51,7 @@ public class TurretSubsystem extends SubsystemBase {
 
     // Controllers *These PID values need to be changed*
     private final PIDController turretController = new PIDController(.1, 0.0, 0.0026);
-    private final PIDController aimController = new PIDController(.00, 0.0, 0);
+    private final PIDController aimController = new PIDController(.04, 0.0, 0);
 
     private final Feedforwards aimFf = new Feedforwards(0);
 
@@ -96,6 +98,72 @@ public class TurretSubsystem extends SubsystemBase {
         });
     }
 
+public double calculateBallTimeOfFlight() {
+    //Ball Velocity m/s TODO: Must Change
+    double ballVelocity = 1;
+    //Ball Launch Angle degrees TODO: Must Change
+    double launchAngleDegrees = 15;
+    //Shooter Height meters
+    double shooterHeight = 0.4826;
+    //Target Height meters
+    double targetHeight = 1.8288;
+    // Convert launch angle from degrees to radians (Java's trig functions use radians)
+    double launchAngleRadians = Math.toRadians(launchAngleDegrees);
+    
+    // Calculate the vertical component of velocity
+    double vVertical = ballVelocity * Math.sin(launchAngleRadians);
+    
+    // Calculate height difference (positive if target is higher than shooter)
+    double heightDifference = targetHeight - shooterHeight;
+    
+    // Gravity constant (m/s²)
+    double g = 9.81;
+    
+    // Calculate the part inside the square root: (v sin(θ))² + 2gh
+    double insideSqrt = Math.pow(vVertical, 2) + 2 * g * heightDifference;
+    
+    // Take the square root (ensure it's not negative)
+    double sqrtTerm = Math.sqrt(Math.max(0, insideSqrt));
+    
+    // Complete formula: t = (vVertical + sqrtTerm) / g
+    double ballTimeOfFlight = (vVertical + sqrtTerm) / g;
+    
+    return ballTimeOfFlight;
+}
+
+public double calculateTurretOffset() {
+    // Pull Robot Velocity m/s (positive = moving forward)
+    double robotVelocity = drivetrainSubsys.getState().Speeds.vxMetersPerSecond;
+    
+    // Pull Time of Flight Calculation (seconds)
+    double timeOfFlight = this.calculateBallTimeOfFlight();
+    
+    // Get distance to target (meters)
+    double angle = Math.toRadians(vision.getTY() + vision.getTurretIMUPitch());
+    double distanceToTag = distance =(44.21875 - 15.625) / Math.tan(angle);
+    
+    // Get the current angle to the tag relative to robot forward (degrees)
+    double tagYawDegrees = vision.getTY();
+    
+    // Lateral movement = how far the robot moves sideways during flight
+    double lateralMovement = robotVelocity * timeOfFlight; // meters
+    
+    // Calculate angular offset using arctan
+    double leadRadians = Math.atan2(lateralMovement, distanceToTag);
+    
+    // Convert lead to degrees
+    double leadDegrees = Math.toDegrees(leadRadians);
+    
+    // Calculate where the turret should point relative to robot forward
+    double desiredTurretAngle = tagYawDegrees + leadDegrees;
+    
+    // The difference is our offset from the tag
+    double turretYawRelativeToTag = desiredTurretAngle - tagYawDegrees;
+    
+    return turretYawRelativeToTag;
+}
+
+
     double voltage;
 
     double aimOutput;
@@ -103,17 +171,16 @@ public class TurretSubsystem extends SubsystemBase {
     public Command track() {
         return run(() -> {
             if (vision.getTurretHasTarget()) {
-                aimOutput = aimController.calculate(vision.getTurretTX(),0);
-                setAngle = setAngle - aimOutput;
+                aimOutput = aimController.calculate(vision.getTurretTX(),5);//setpoint is the offset of the turret(temp)
+                setAngle = setAngle - aimOutput + calculateTurretOffset() ;
             }
             setAngle = turnFeedforward() + setAngle; // Adds rotational feedforward
             voltage = turretController.calculate(getEncoder(), setAngle);
-            if (voltage > 1) {  //TODO: create constant for 2, do not go higher than 2
-                voltage = 1;
-            } else if (voltage < -1) {
-                voltage = -1;
-            }
-            turretMotor.setVoltage(voltage);
+            if (voltage > 4) {  //TODO: create constant for 2, do not go higher than 2
+                voltage = 4;
+            } else if (voltage < -4) {
+                voltage = -4;
+            }            turretMotor.setVoltage(voltage);
         }
 
         );
@@ -175,12 +242,10 @@ public class TurretSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Set Angle", setAngle);
         SmartDashboard.putNumber("Turret Set Angle", vision.getTurretTX());
         SmartDashboard.putNumber("Aim PID", aimController.calculate(vision.getTurretTX(), 0));
-        SmartDashboard.putNumber("Distance Calculation", vision.getDist());
         SmartDashboard.putNumber("GetTy", vision.getTY());
         // turretFeedForward = turnFeedforward();
         SmartDashboard.putNumber("Turret Feedforward", turretFeedForward); // Bruh
         SmartDashboard.putNumber("Turret IMUPitch", vision.getTurretIMUPitch());
-        SmartDashboard.putNumber("GetDistance", vision.getDist());
         angle = Math.toRadians(vision.getTY() + vision.getTurretIMUPitch());
         distance =(44.21875 - 15.625) / Math.tan(angle);
         SmartDashboard.putNumber("counculatedDist", distance);

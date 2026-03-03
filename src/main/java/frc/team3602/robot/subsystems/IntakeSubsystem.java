@@ -1,35 +1,31 @@
 package frc.team3602.robot.subsystems;
 
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.Commands.*;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.team3602.robot.Constants.IntakeConstants;
 import frc.team3602.robot.Constants.ShooterConstants;
 
 public class IntakeSubsystem extends SubsystemBase{
     //variables
-    private static TalonFX intakeMotor;
-    private static TalonFX intakePivot;
+    private static TalonFX intakeMotor = new TalonFX(IntakeConstants.kIntakeMotorID, "rio");
     
     //constructor
     public IntakeSubsystem(){
-        intakeMotor = new TalonFX(IntakeConstants.kIntakeMotorID, "rio");
-        intakePivot = new TalonFX(IntakeConstants.kIntakePivotID, "rio");
+
     }
 
-    public Double getPosition() {
-        return (intakePivot.getRotorPosition().getValueAsDouble() / 125); // every revolution is 12 degrees because it is                                                           // a 30:1 gear ratio 10:1 from gear, 3:1 from gear box
-    }
-    public Boolean isDown() {
-        return (getPosition() < -0.6);
-    }
-
-    public Boolean isUP() {
-        return (getPosition() > -4.5);
-    }
+    private final PIDController pivotPID = new PIDController(0.15, 0.0,0.0);
+    private final PIDController pivotFollowerPID = new PIDController(0.15,0.0, 0.0);
 
     //EAT
     public Command setIntakeSpeed() {
@@ -50,33 +46,9 @@ public class IntakeSubsystem extends SubsystemBase{
         intakeMotor.set(-IntakeConstants.kIntakeMotorSpeed));
     }
 
-    public Command runPivot(double power) {
-        return runOnce(() ->
-        intakePivot.setVoltage(power));
-    }
-
-    public Command stopPivot() {
-        return runOnce(() -> 
-        intakePivot.setVoltage(0));
-    }
-
-     public Command dropIntake() {
-        return Commands.sequence(
-         this.runPivot(12).until(() -> this.isDown()),
-         this.stopPivot()
-        );
-     }
-
-     public Command raiseIntake(){
-        return Commands.sequence(
-            this.runPivot(-12).until(() -> this.isUP()),
-            this.stopPivot()
-        );
-     }
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Intake Position", intakePivot.getRotorPosition().getValueAsDouble() / 9);
-        // SmartDashboard.putBoolean("Intake Boolean", isDown());
+
     }
 }
 

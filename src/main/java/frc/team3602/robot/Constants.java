@@ -20,9 +20,11 @@ public final class Constants {
         //Motor ID
         public final static int kIntakeMotorID = 8;
         public final static int kIntakePivotID = 13;
+        public final static int kIntakePivotFollowID = 14;
         
         //Motor Speeds
         public final static double kIntakeMotorSpeed = -0.5;
+        public final static double kPivotCurrentLimit = 10;
 
     }
 
@@ -40,9 +42,9 @@ public final class Constants {
         public final static int kSpindexerMotorID = 12;
         public final static int kReceiveMotorID = 11;
 
-        public final static double kSpindexerMotorSpeed = -1;
+        public final static double kSpindexerMotorSpeed = -.65;
 
-        public final static double kRecieveFuelSpeed = 1;
+        public final static double kRecieveFuelSpeed = .75;//.65
     }
 
     

@@ -13,21 +13,26 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.team3602.robot.Vision;
 import frc.team3602.robot.generated.TunerConstants;
 import frc.team3602.robot.subsystems.CommandSwerveDrivetrain;
 import frc.team3602.robot.subsystems.IntakeSubsystem;
+import frc.team3602.robot.subsystems.PivotSubsystem;
 import frc.team3602.robot.subsystems.ShooterSubsystem;
 import frc.team3602.robot.subsystems.SpindexerSubsystem;
 import frc.team3602.robot.subsystems.TurretSubsystem;
 
 public class RobotContainer {
 
+       
     private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top
                                                                                         // speed
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second
@@ -41,31 +46,47 @@ public class RobotContainer {
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
+    private SendableChooser<Command> autoChooser;
+    private SendableChooser<Double> polarityChooser = new SendableChooser<>();
 
-    public final CommandXboxController joystick = new CommandXboxController(0);
+    public final CommandXboxController driverController = new CommandXboxController(0);
+    public final CommandXboxController operatorController = new CommandXboxController(1);
+    
 
+    public final Vision vision = new Vision();
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
     public final IntakeSubsystem intake = new IntakeSubsystem();
-    public final ShooterSubsystem shooter = new ShooterSubsystem();
+    public final ShooterSubsystem shooter = new ShooterSubsystem(vision);
     public final TurretSubsystem turret = new TurretSubsystem(drivetrain);
     public final SpindexerSubsystem spindexer = new SpindexerSubsystem();
-    public final Superstructure superStructure = new Superstructure(intake, shooter, spindexer, turret, drivetrain);
+    public final PivotSubsystem pivot = new PivotSubsystem();
+    public final Superstructure superStructure = new Superstructure(intake, shooter, spindexer, turret, drivetrain, pivot);
+
+
+
+    private Boolean intakeUp = (pivot.getPivotEncoder < 0);
+    private Boolean intakeDown = (pivot.getPivotEncoder > 90);
 
     public RobotContainer() {
-        turret.setDefaultCommand(turret.track());
+        // named commands for pathplanner go here
+        pivot.setDefaultCommand(pivot.holdPivot());
         configureBindings();
+        polarityChooser.setDefaultOption("Positive", 1.0);
+        polarityChooser.addOption("Negative", -1.0);
+        SmartDashboard.putData( "Polarity Chooser", polarityChooser);
     }
+    
 
     private void configureBindings() {
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
         drivetrain.setDefaultCommand(
                 // Drivetrain will execute this command periodically
-                drivetrain.applyRequest(() -> drive.withVelocityX(-joystick.getLeftY() * MaxSpeed) // Drive forward with
+                drivetrain.applyRequest(() -> drive.withVelocityX(polarityChooser.getSelected()*-driverController.getLeftY() * MaxSpeed) // Drive forward with
                                                                                                   // negative Y
                                                                                                   // (forward)
-                        .withVelocityY(-joystick.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-                        .withRotationalRate(-joystick.getRightX() * MaxAngularRate) // Drive counterclockwise with
+                        .withVelocityY(polarityChooser.getSelected()*-driverController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+                        .withRotationalRate(-driverController.getRightX() * MaxAngularRate) // Drive counterclockwise with
                                                                                     // negative X (left)
 
                 ));
@@ -75,33 +96,36 @@ public class RobotContainer {
         final var idle = new SwerveRequest.Idle();
         RobotModeTriggers.disabled().whileTrue(
                 drivetrain.applyRequest(() -> idle).ignoringDisable(true));
-        joystick.leftBumper()
+        driverController.leftBumper()
                 .whileTrue(drivetrain.applyRequest(() -> 
-                        drive.withVelocityX(joystick.getLeftY() * MaxSpeed)                                                                            // (forward)
-                        .withVelocityY(-joystick.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+                        drive.withVelocityX(driverController.getLeftY() * MaxSpeed)                                                                            // (forward)
+                        .withVelocityY(-driverController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
                         .withRotationalRate(drivetrain.rAlignment()) // Drive counterclockwise with negative X (left)
                 ));
-        joystick.a().whileTrue(spindexer.setFasterSpindexerReceive()).onFalse(spindexer.stopSpindexer());
-        joystick.b().whileTrue(shooter.setShootVoltage(8)).onFalse(shooter.stopShooter());
-        joystick.povRight().whileTrue(turret.setAngle(10));
-        joystick.povLeft().whileTrue(turret.setAngle(-10));
-        //joystick.povDown().whileTrue(turret.testTurret(0));
-        joystick.rightBumper().whileTrue(turret.turretAlignment());
-        joystick.y().whileTrue(shooter.setShootSpeed(10)).whileFalse(shooter.stopShooter());
-        joystick.povDown().whileTrue(intake.dropIntake());
-        joystick.povUp().whileTrue(intake.setIntakeSpeed()).onFalse(intake.stopIntake());
-        // joystick.x().whileTrue(spindexer.setSpindexerReceive()).whileFalse(spindexer.stopSpindexer());
-        // joystick.povUp().whileTrue(spindexer.setFasterSpindexerReceive()).whileFalse(spindexer.stopSpindexer());
+        driverController.a().whileTrue(spindexer.setFasterSpindexerReceive()).onFalse(spindexer.stopSpindexer());
+        driverController.b().whileTrue(shooter.setShootSpeed()).onFalse(shooter.stopShooter());
+        driverController.x().whileTrue(superStructure.shootBall2()).onFalse(superStructure.stopShoot().andThen(spindexer.stopSpindexer()));
+        driverController.povRight().whileTrue(turret.setAngle(10));
+        driverController.povLeft().whileTrue(turret.setAngle(-10));
+        //driverController.povDown().whileTrue(turret.testTurret(0));
+        driverController.rightBumper().whileTrue(turret.turretAlignment());
+        // driverController.y().whileTrue(shooter.setShootSpeed()).whileFalse(shooter.stopShooter());
+        operatorController.povDown().whileTrue(superStructure.intakeBall());
+        operatorController.povUp().whileTrue(superStructure.stopIntake());
+        operatorController.b().whileTrue(shooter.setShootVelocity(-62)).onFalse(shooter.stopShooter());
+        // operatorController.a().whileTrue(intake.setIntakeSpeed()).onFalse(intake.stopIntake());
+        // driverController.x().whileTrue(spindexer.setSpindexerReceive()).whileFalse(spindexer.stopSpindexer());
+        // driverController.povUp().whileTrue(spindexer.setFasterSpindexerReceive()).whileFalse(spindexer.stopSpindexer());
 
 
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
-        joystick.back().and(joystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-        joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+        // driverController.back().and(driverController.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+        // driverController.start().and(driverController.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
         // Reset the field-centric heading on left bumper press.
-        // joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+        // driverController.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
         drivetrain.registerTelemetry(logger::telemeterize);
     }
     
