@@ -96,23 +96,31 @@ public class RobotContainer {
         final var idle = new SwerveRequest.Idle();
         RobotModeTriggers.disabled().whileTrue(
                 drivetrain.applyRequest(() -> idle).ignoringDisable(true));
-        driverController.leftBumper()
-                .whileTrue(drivetrain.applyRequest(() -> 
-                        drive.withVelocityX(driverController.getLeftY() * MaxSpeed)                                                                            // (forward)
-                        .withVelocityY(-driverController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-                        .withRotationalRate(drivetrain.rAlignment()) // Drive counterclockwise with negative X (left)
-                ));
-        driverController.a().whileTrue(spindexer.setFasterSpindexerReceive()).onFalse(spindexer.stopSpindexer());
-        driverController.b().whileTrue(shooter.setShootSpeed()).onFalse(shooter.stopShooter());
-        driverController.x().whileTrue(superStructure.shootBall2()).onFalse(superStructure.stopShoot().andThen(spindexer.stopSpindexer()));
-        driverController.povRight().whileTrue(turret.setAngle(10));
-        driverController.povLeft().whileTrue(turret.setAngle(-10));
-        //driverController.povDown().whileTrue(turret.testTurret(0));
-        driverController.rightBumper().whileTrue(turret.turretAlignment());
-        // driverController.y().whileTrue(shooter.setShootSpeed()).whileFalse(shooter.stopShooter());
-        operatorController.povDown().whileTrue(superStructure.intakeBall());
-        operatorController.povUp().whileTrue(superStructure.stopIntake());
-        operatorController.b().whileTrue(shooter.setShootVelocity(-62)).onFalse(shooter.stopShooter());
+        //Operator Controls
+        operatorController.y().whileTrue(superStructure.shootBall2()).whileFalse(superStructure.stopShoot());
+        operatorController.povUp().onTrue(superStructure.stopIntake());
+        operatorController.a().onTrue(turret.passMode());
+        operatorController.back().onTrue(turret.setAngle(0)); //FAILSAFE
+        
+        //DriverControls
+        driverController.rightBumper().onTrue(superStructure.intakeBall());
+        // driverController.leftBumper()
+        //         .whileTrue(drivetrain.applyRequest(() -> 
+        //                 drive.withVelocityX(driverController.getLeftY() * MaxSpeed)                                                                            // (forward)
+        //                 .withVelocityY(-driverController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+        //                 .withRotationalRate(drivetrain.rAlignment()) // Drive counterclockwise with negative X (left)
+        //         ));
+        // driverController.a().whileTrue(spindexer.setFasterSpindexerReceive()).onFalse(spindexer.stopSpindexer());
+        // driverController.b().whileTrue(shooter.setShootSpeed()).onFalse(shooter.stopShooter());
+        // driverController.x().whileTrue(superStructure.shootBall2()).onFalse(superStructure.stopShoot().andThen(spindexer.stopSpindexer()));
+        // driverController.povRight().whileTrue(turret.setAngle(10));
+        // driverController.povLeft().whileTrue(turret.setAngle(-10));
+        // //driverController.povDown().whileTrue(turret.testTurret(0));
+        // driverController.rightBumper().whileTrue(turret.turretAlignment());
+        // // driverController.y().whileTrue(shooter.setShootSpeed()).whileFalse(shooter.stopShooter());
+        // operatorController.povDown().whileTrue(superStructure.intakeBall());
+        // operatorController.povUp().whileTrue(superStructure.stopIntake());
+        // operatorController.b().whileTrue(shooter.setShootVelocity(-62)).onFalse(shooter.stopShooter());
         // operatorController.a().whileTrue(intake.setIntakeSpeed()).onFalse(intake.stopIntake());
         // driverController.x().whileTrue(spindexer.setSpindexerReceive()).whileFalse(spindexer.stopSpindexer());
         // driverController.povUp().whileTrue(spindexer.setFasterSpindexerReceive()).whileFalse(spindexer.stopSpindexer());

@@ -55,7 +55,7 @@ public class Superstructure {
                 turretSubsys.track(),
                 Commands.sequence(
                         shooterSubsys.setShootVelocity(-57.5).withTimeout(2).andThen(
-                        spindexerSubsys.setFeedVelocity(-57.5))
+                                spindexerSubsys.setFeedVelocity(-57.5))
 
                 ));
     }
@@ -79,6 +79,8 @@ public class Superstructure {
         return intakeSubsys.reverseIntake().withTimeout(.2);
     }
 
+   
+   
     // Shooter
     // public Command ShootBall() {
     // return

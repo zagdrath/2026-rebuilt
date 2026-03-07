@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.team3602.robot.Constants.*;
+import frc.team3602.robot.LimelightHelpers;
 import frc.team3602.robot.Vision;
 
 public class TurretSubsystem extends SubsystemBase {
@@ -185,6 +186,20 @@ public double calculateTurretOffset() {
 
         );
 
+    }
+    // THIS IS IN PROGRESS DO NOT HATE HATER ABE
+    public Command passMode() {
+        return run(() -> {
+            if (vision.getTurretHasTarget()) {
+            aimOutput = aimController.calculate(vision.getTurretTX(),5);//setpoint is the offset of the turret(temp)
+            setAngle = setAngle - aimOutput + calculateTurretOffset() ;
+
+            } else {
+                vision.getPose();
+                
+            }
+
+        });
     }
 
     double rotationSpeed;
