@@ -14,8 +14,15 @@ public final class Constants {
 
         //Motor Speeds
         public final static double kShooterSpeed = .75;
+
+        //Failsafe Speed
+        public final static double kShooterFailsafeSpeed = -41.5;
     }
 
+    public final class ClimberConstants {
+        //Motor ID
+        public final static int kClimberMotorID = 15;
+    }
     public final class IntakeConstants {
         //Motor ID
         public final static int kIntakeMotorID = 8;

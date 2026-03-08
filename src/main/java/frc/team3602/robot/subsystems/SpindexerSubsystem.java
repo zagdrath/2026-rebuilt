@@ -62,6 +62,13 @@ public class SpindexerSubsystem extends SubsystemBase {
         });
     }
 
+    public Command setReverseSpindexerReceive() {
+        return runOnce(() -> {
+            receiveMotor.set(spindexerConstants.kRecieveFuelSpeed);
+            spindexerMotor.set(-spindexerConstants.kSpindexerMotorSpeed);
+        });
+    }
+
     /* Periodic */
 
     @Override

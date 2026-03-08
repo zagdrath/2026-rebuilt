@@ -169,6 +169,8 @@ public double calculateTurretOffset() {
 
     double aimOutput;
 
+    public boolean atTarget;
+
     public Command track() {
         return run(() -> {
             if (vision.getTurretHasTarget()) {
@@ -176,6 +178,7 @@ public double calculateTurretOffset() {
                 setAngle = setAngle - aimOutput + calculateTurretOffset() ;
             }
             setAngle = turnFeedforward() + setAngle; // Adds rotational feedforward
+            atTarget = (Math.abs(setAngle - getEncoder())<0.5);
             voltage = turretController.calculate(getEncoder(), setAngle);
             if (voltage > 4) {  //TODO: create constant for 2, do not go higher than 2
                 voltage = 4;

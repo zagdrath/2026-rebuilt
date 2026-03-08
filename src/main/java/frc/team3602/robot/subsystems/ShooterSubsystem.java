@@ -6,9 +6,11 @@
 
 package frc.team3602.robot.subsystems;
 
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static frc.team3602.robot.Constants.*;
 
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
@@ -21,6 +23,7 @@ import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 
 import frc.team3602.robot.Vision;
@@ -31,6 +34,8 @@ public class ShooterSubsystem extends SubsystemBase {
     // Shooter Motors
     private static TalonFX shootermotor1;
     private static TalonFX shootermotor2;
+
+   
 
     // Instantiating Classes
     public Vision vision;
@@ -50,6 +55,7 @@ public class ShooterSubsystem extends SubsystemBase {
         // feedermoter = new TalonFX(ShooterConstants.kFeederMotorID);
         configShooterSubsys();
         SmartDashboard.putNumber("ShootSpeedInput", shootShuffleSpeed);
+        shootermotor2.setControl(new Follower(shootermotor1.getDeviceID(), MotorAlignmentValue.Opposed));
     }
 
     final MotionMagicVelocityVoltage m_request = new MotionMagicVelocityVoltage(0);
@@ -58,23 +64,23 @@ public class ShooterSubsystem extends SubsystemBase {
     public Command setShootSpeed() {
         return run(() -> {
             shootermotor1.set(-shootLerpSpeed);
-            shootermotor2.set(shootLerpSpeed); //shootLerpSpeed
+            // shootermotor2.set(shootLerpSpeed); //shootLerpSpeed
         });
     }
 
     public Command setShootVelocity(double rotationsPerSecond) {
         return run(() -> {
             shootermotor1.setControl(m_request.withVelocity(rotationsPerSecond));
-            shootermotor2.setControl(m_request.withVelocity(-rotationsPerSecond));
+            // shootermotor2.setControl(m_request.withVelocity(-rotationsPerSecond));
         });
     }
 
-    public Command setShootVoltage(double shootVoltz) {
-        return runOnce(() -> {
-            shootermotor1.setVoltage(shootVoltz);
-            shootermotor2.setVoltage(-shootVoltz);
-        });
-    }
+    // public Command setShootVoltage(double shootVoltz) {
+    //     return runOnce(() -> {
+    //         shootermotor1.setVoltage(shootVoltz);
+    //         // shootermotor2.setVoltage(-shootVoltz);
+    //     });
+    // }
 
     // public Command setFeederSpeed(double speed) {
     // return runOnce(() -> {
@@ -86,7 +92,7 @@ public class ShooterSubsystem extends SubsystemBase {
     public Command stopShooter() {
         return run(() -> {
             shootermotor1.set(0);
-            shootermotor2.set(0);
+            // shootermotor2.set(0);
         });
     }
 
@@ -99,10 +105,15 @@ public class ShooterSubsystem extends SubsystemBase {
     double angle;
     double distance;
 
+     //If at speed
+    public boolean atSpeed() {
+        return shootermotor1.getMotionMagicAtTarget().getValue();
+    }
+
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Shooter1 Speed", ShooterConstants.kShooterSpeed);
-        SmartDashboard.putNumber("Shooter2 Speed", ShooterConstants.kShooterSpeed);
+        // SmartDashboard.putNumber("Shooter2 Speed", ShooterConstants.kShooterSpeed);
         // SmartDashboard.putNumber("Feeder Speed", ShooterConstants.kFeederMotorSpeed);
         angle = Math.toRadians(vision.getTY() + vision.getTurretIMUPitch());
         distance = (44.21875 - 15.625) / Math.tan(angle);
@@ -133,8 +144,8 @@ public class ShooterSubsystem extends SubsystemBase {
         var currentLimitConfigs = talonFXConfigs.CurrentLimits;
         currentLimitConfigs.StatorCurrentLimitEnable = true;
         currentLimitConfigs.SupplyCurrentLimitEnable = true;
-        currentLimitConfigs.StatorCurrentLimit = 40;
-        currentLimitConfigs.SupplyCurrentLimit = 60;
+        currentLimitConfigs.StatorCurrentLimit = 60;
+        currentLimitConfigs.SupplyCurrentLimit = 100;
 
         shootermotor1.getConfigurator().apply(talonFXConfigs);
         shootermotor2.getConfigurator().apply(talonFXConfigs);

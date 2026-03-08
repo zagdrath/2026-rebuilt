@@ -18,7 +18,7 @@ public class PivotSubsystem extends SubsystemBase {
     public double getPivotEncoder;
     private double pivotSetPoint = 0;
 
-    private double offset = 109;
+    private double offset = 90;
 
     public PivotSubsystem() {
         intakePivot.setPosition(0);
@@ -70,11 +70,11 @@ public class PivotSubsystem extends SubsystemBase {
     }
 
     public Command dumbDropIntake() {
-        return run(() -> pivotSetPoint = 109);
+        return run(() -> pivotSetPoint = 104);
     }
 
     public Command dumbRaiseIntake() {
-        return runOnce(() -> pivotSetPoint = 0);
+        return runOnce(() -> pivotSetPoint = 20);
     }
 
     public Boolean isRightDown() {
@@ -110,6 +110,8 @@ public class PivotSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Pivot Setpoint", pivotSetPoint);
         SmartDashboard.putNumber("Pivot Voltage", intakePivot.getMotorVoltage().getValueAsDouble());
         SmartDashboard.putNumber("Pivot Follower Voltage", intakePivotFollow.getMotorVoltage().getValueAsDouble());
+        SmartDashboard.putNumber("Right Pivot Position", getRightPosition());
+        SmartDashboard.putNumber("Left Pivot Position", getLeftPosition());
     }
 
 }

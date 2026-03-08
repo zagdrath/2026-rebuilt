@@ -59,8 +59,8 @@ public class IntakeSubsystem extends SubsystemBase{
         var currentLimitConfigs = talonFXConfigs.CurrentLimits;
         currentLimitConfigs.StatorCurrentLimitEnable = true;
         currentLimitConfigs.SupplyCurrentLimitEnable = true;
-        currentLimitConfigs.StatorCurrentLimit = 20;
-        currentLimitConfigs.SupplyCurrentLimit = 40;
+        // currentLimitConfigs.StatorCurrentLimit = 60;
+        // currentLimitConfigs.SupplyCurrentLimit = 60;
 
         intakeMotor.getConfigurator().apply(talonFXConfigs);
 

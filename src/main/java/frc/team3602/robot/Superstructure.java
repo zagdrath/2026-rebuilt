@@ -9,6 +9,7 @@ package frc.team3602.robot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.team3602.robot.Constants.ShooterConstants;
 import frc.team3602.robot.Constants.spindexerConstants;
 import frc.team3602.robot.subsystems.CommandSwerveDrivetrain;
@@ -60,6 +61,15 @@ public class Superstructure {
                 ));
     }
 
+    public Command shootFailsafe() {
+        return Commands.sequence(
+            turretSubsys.setAngle(0),
+            shooterSubsys.setShootVelocity(ShooterConstants.kShooterFailsafeSpeed),
+            Commands.waitUntil(() -> shooterSubsys.atSpeed() && turretSubsys.atTarget),
+            spindexerSubsys.setFeedVelocity(-62.5)
+        );
+    }
+
     public Command stopShoot() {
         return Commands.sequence(shooterSubsys.stopShooter(),
                 spindexerSubsys.stopSpindexer());
@@ -72,7 +82,7 @@ public class Superstructure {
     }
 
     public Command stopIntake() {
-        return pivotSubsys.smartRaisePivot().alongWith(intakeSubsys.stopIntake());
+        return pivotSubsys.dumbRaiseIntake().alongWith(intakeSubsys.stopIntake());
     }
 
     public Command outakeBall() {
