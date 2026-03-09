@@ -60,6 +60,11 @@ public class ShooterSubsystem extends SubsystemBase {
 
     final MotionMagicVelocityVoltage m_request = new MotionMagicVelocityVoltage(0);
 
+
+    public double getVelocity() {
+        return shootermotor1.getVelocity().getValueAsDouble();
+    }
+
     // Go
     public Command setShootSpeed() {
         return run(() -> {
@@ -115,9 +120,8 @@ public class ShooterSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Shooter1 Speed", ShooterConstants.kShooterSpeed);
         // SmartDashboard.putNumber("Shooter2 Speed", ShooterConstants.kShooterSpeed);
         // SmartDashboard.putNumber("Feeder Speed", ShooterConstants.kFeederMotorSpeed);
-        angle = Math.toRadians(vision.getTY() + vision.getTurretIMUPitch());
-        distance = (44.21875 - 15.625) / Math.tan(angle);
-        shootLerpSpeed = shootLerp.get(distance / 12);
+        distance = vision.getDistanceToTarget();
+        shootLerpSpeed = shootLerp.get(distance);
         SmartDashboard.putNumber("Lerp Shoot Speed", shootLerpSpeed);
         SmartDashboard.putNumber("Dist in side of shootSubsys", distance / 12);
         SmartDashboard.getNumber("ShootSpeedInput", shootShuffleSpeed);
