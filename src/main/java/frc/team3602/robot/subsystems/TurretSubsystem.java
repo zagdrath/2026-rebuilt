@@ -26,10 +26,12 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.team3602.robot.Constants.*;
 import frc.team3602.robot.LimelightHelpers;
 import frc.team3602.robot.Vision;
+import frc.team3602.robot.subsystems.ShooterSubsystem;
 
 public class TurretSubsystem extends SubsystemBase {
 
     public CommandSwerveDrivetrain drivetrainSubsys;
+    public ShooterSubsystem shooter;
 
     public TurretSubsystem(CommandSwerveDrivetrain drivetrainSubsys) {
         this.drivetrainSubsys = drivetrainSubsys;
@@ -178,11 +180,27 @@ private double clampAngle(double angleDeg) {
     return angleDeg;
 }
 
+public double getBallVelocity() {
+
+    double motorRPS = shooter.getVelocity();
+
+    double gearRatio = 1.0; // example motor:wheel
+    double wheelDiameterMeters = 0.1016; // 4 inch wheel
+
+    double wheelRPS = motorRPS / gearRatio;
+
+    double circumference = Math.PI * wheelDiameterMeters;
+
+    double ballVelocity = wheelRPS * circumference;
+
+    return ballVelocity; // meters per second
+}
+
 
 
 public double calculateBallTimeOfFlight() {
     //Ball Velocity m/s TODO: Must Change
-    double ballVelocity = 1;
+    double ballVelocity = getBallVelocity();
     //Ball Launch Angle degrees TODO: Must Change
     double launchAngleDegrees = 15;
     //Shooter Height meters
