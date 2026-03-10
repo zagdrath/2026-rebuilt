@@ -17,34 +17,23 @@ import frc.team3602.robot.Constants.IntakeConstants;
 import frc.team3602.robot.Constants.ShooterConstants;
 
 public class IntakeSubsystem extends SubsystemBase{
-    //variables
+    /* Motors */
     private static TalonFX intakeMotor = new TalonFX(IntakeConstants.kIntakeMotorID, "rio");
     
-    //constructor
     public IntakeSubsystem(){
         configIntakeSubsys();
     }
 
-    private final PIDController pivotPID = new PIDController(0.15, 0.0,0.0);
-    private final PIDController pivotFollowerPID = new PIDController(0.15,0.0, 0.0);
-
-    //EAT
-    public Command setIntakeSpeed() {
-        return runOnce(() -> 
-            intakeMotor.set(IntakeConstants.kIntakeMotorSpeed));
-    
+    public Command runIntake() {
+        return runOnce(() -> intakeMotor.set(IntakeConstants.kIntakeMotorSpeed));
     }
 
-    //STOP
-    public Command stopIntake() {
-        return runOnce(() ->
-        intakeMotor.set(0));
-    }
-
-    //VOMIT
     public Command reverseIntake() {
-        return runOnce(() ->
-        intakeMotor.set(-IntakeConstants.kIntakeMotorSpeed));
+        return runOnce(() -> intakeMotor.set(-IntakeConstants.kIntakeMotorSpeed));
+    }
+    
+    public Command stopIntake() {
+        return runOnce(() -> intakeMotor.set(0));
     }
 
     @Override
@@ -55,7 +44,7 @@ public class IntakeSubsystem extends SubsystemBase{
     private void configIntakeSubsys() {
         TalonFXConfiguration talonFXConfigs = new TalonFXConfiguration();
 
-                 // Set motor current limits
+        // Set motor current limits
         var currentLimitConfigs = talonFXConfigs.CurrentLimits;
         currentLimitConfigs.StatorCurrentLimitEnable = true;
         currentLimitConfigs.SupplyCurrentLimitEnable = true;
@@ -63,7 +52,5 @@ public class IntakeSubsystem extends SubsystemBase{
         // currentLimitConfigs.SupplyCurrentLimit = 60;
 
         intakeMotor.getConfigurator().apply(talonFXConfigs);
-
     }
 }
-
